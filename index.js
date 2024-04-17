@@ -1,7 +1,9 @@
 const express = require('express')
 const open = require('open')
 const cors = require('cors')
+const db = require('./db');
 app = express()
+db.connect()
 
 var url = require('url');
 
