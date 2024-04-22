@@ -5,11 +5,15 @@ const db = require('./db');
 app = express()
 db.connect()
 
+
+const battleship = require('./games/battleship');
+
 var url = require('url');
 
 const port = process.env.PORT || 3000
 
 app.use(cors())
+app.use(battleship);
 
 // Use Express to publish static HTML, CSS, and JavaScript files that run in the browser. 
 app.use(express.static(__dirname + '/static'))
@@ -17,8 +21,8 @@ app.use(express.static(__dirname + '/static'))
 // The app.get functions below are being processed in Node.js running on the server.
 // Implement a custom About page.
 app.get('/', (request, response) => {
-	response.type('text/plain')
-	response.send('Home page')
+  response.type('text/plain')
+  response.send('Home page')
 })
 
 // Custom 404 page.
