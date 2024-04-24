@@ -7,6 +7,7 @@ db.connect()
 
 
 const battleship = require('./games/battleship');
+const wordle = require('./games/wordle')
 
 var url = require('url');
 
@@ -14,6 +15,7 @@ const port = process.env.PORT || 3000
 
 app.use(cors())
 app.use(battleship);
+app.use(wordle);
 
 // Use Express to publish static HTML, CSS, and JavaScript files that run in the browser. 
 app.use(express.static(__dirname + '/static'))
