@@ -2,8 +2,11 @@ const express = require('express')
 const open = require('open')
 const cors = require('cors')
 const db = require('./db');
+const dotenv = require('dotenv');
+const bodyParser = require('body-parser');
 app = express()
 db.connect()
+dotenv.config()
 
 
 const battleship = require('./games/battleship');
@@ -14,9 +17,40 @@ const port = process.env.PORT || 3000
 
 app.use(cors())
 app.use(battleship);
+app.use(bodyParser.json())
 
 // Use Express to publish static HTML, CSS, and JavaScript files that run in the browser. 
 app.use(express.static(__dirname + '/static'))
+
+
+app.post('/auth/github/callback', async (req, res) => {
+  const { code } = req.body;
+
+  // Exchange code for access token
+  const tokenResponse = await fetch('https://github.com/login/oauth/access_token', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+    },
+    body: JSON.stringify({
+      client_id: process.env.GITHUB_CLIENT_ID,
+      client_secret: process.env.GITHUB_CLIENT_SECRET,
+      code,
+    }),
+  });
+
+  const tokenData = await tokenResponse.json();
+  const accessToken = tokenData.access_token;
+
+  if (accessToken) {
+    // Use this access token to fetch user details or other tasks.
+    // Maybe generate a JWT and send it to the frontend for session management.
+    res.json({ success: true, accessToken });
+  } else {
+    res.json({ success: false });
+  }
+});
 
 // The app.get functions below are being processed in Node.js running on the server.
 // Implement a custom About page.
