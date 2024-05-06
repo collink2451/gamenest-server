@@ -46,15 +46,6 @@ app.use((req, res, next) => {
 // Use Express to publish static HTML, CSS, and JavaScript files that run in the browser. 
 app.use(express.static(__dirname + '/static'))
 
-// Add express session
-const session = require('express-session');
-app.use(session({
-  secret: 'this_is_a_secret',
-  resave: false,
-  saveUninitialized: true,
-  cookie: { secure: false }
-}));
-
 
 app.get('/auth/github/callback', async (req, res) => {
   const code = req.query.code;
