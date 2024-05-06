@@ -17,7 +17,7 @@ var url = require('url');
 
 const port = process.env.PORT || 3000
 
-var whitelist = ['http://localhost:3000', /** other domains if any */]
+var whitelist = ['http://localhost:3000', 'https://lively-dune-0fea8d010.4.azurestaticapps.net']
 var corsOptions = {
   credentials: true,
   origin: function (origin, callback) {
