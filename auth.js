@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 
-app.get('/auth/github/callback', async (req, res) => {
+router.get('/auth/github/callback', async (req, res) => {
     const code = req.query.code;
 
     // Exchange code for access token
@@ -45,7 +45,7 @@ app.get('/auth/github/callback', async (req, res) => {
     }
 });
 
-app.get('/auth/check', (req, res) => {
+router.get('/auth/check', (req, res) => {
     if (!req.cookies) {
         res.status(204).send()
         return;
@@ -69,7 +69,7 @@ app.get('/auth/check', (req, res) => {
         });
 });
 
-app.get('/auth/logout', (req, res) => {
+router.get('/auth/logout', (req, res) => {
     res.clearCookie('accessToken');
     res.status(204).send()
 });
