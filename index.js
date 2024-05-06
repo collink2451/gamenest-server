@@ -4,6 +4,7 @@ const cors = require('cors')
 const db = require('./db');
 const dotenv = require('dotenv');
 const bodyParser = require('body-parser');
+const cookieParser = require('cookie-parser');
 app = express()
 db.connect()
 dotenv.config()
@@ -16,17 +17,31 @@ var url = require('url');
 
 const port = process.env.PORT || 3000
 
-app.use(cors())
-app.use(battleship);
+var whitelist = ['http://localhost:3000', /** other domains if any */]
+var corsOptions = {
+  credentials: true,
+  origin: function (origin, callback) {
+    if (whitelist.indexOf(origin) !== -1) {
+      callback(null, true)
+    } else {
+      callback(new Error('Not allowed by CORS'))
+    }
+  }
+}
+app.use(cors(corsOptions))
+app.use(cookieParser());
 app.use(bodyParser.json())
+
+
+app.use(battleship);
 app.use(wordle);
 
 // Use Express to publish static HTML, CSS, and JavaScript files that run in the browser. 
 app.use(express.static(__dirname + '/static'))
 
 
-app.post('/auth/github/callback', async (req, res) => {
-  const { code } = req.body;
+app.get('/auth/github/callback', async (req, res) => {
+  const code = req.query.code;
 
   // Exchange code for access token
   const tokenResponse = await fetch('https://github.com/login/oauth/access_token', {
@@ -45,13 +60,54 @@ app.post('/auth/github/callback', async (req, res) => {
   const tokenData = await tokenResponse.json();
   const accessToken = tokenData.access_token;
 
+  // Get user details
+  const userResponse = await fetch('https://api.github.com/user', {
+    headers: {
+      Authorization: `token ${accessToken}`,
+    },
+  });
+
+  // Get username from response
+  const { login } = await userResponse.json();
+
   if (accessToken) {
-    // Use this access token to fetch user details or other tasks.
-    // Maybe generate a JWT and send it to the frontend for session management.
-    res.json({ success: true, accessToken });
+    // Create session cookie
+    res.cookie('accessToken', accessToken);
+
+    // Return access token and user details
+    res.json({ success: true, accessToken, user: login });
   } else {
-    res.json({ success: false });
+    res.status(204).send()
   }
+});
+
+app.get('/auth/check', (req, res) => {
+  if (!req.cookies) {
+    res.status(204).send()
+    return;
+  }
+  const accessToken = req.cookies.accessToken;
+  if (!accessToken) {
+    res.status(204).send()
+    return;
+  }
+  // Verify access token against github
+  fetch('https://api.github.com/user', {
+    headers: {
+      Authorization: `token ${accessToken}`,
+    },
+  }).then((response) => response.json())
+    .then((data) => {
+      res.json({ success: true, accessToken, user: data.login });
+    })
+    .catch(() => {
+      res.status(204).send()
+    });
+});
+
+app.get('/auth/logout', (req, res) => {
+  res.clearCookie('accessToken');
+  res.status(204).send()
 });
 
 // The app.get functions below are being processed in Node.js running on the server.
@@ -79,5 +135,5 @@ app.use((err, request, response, next) => {
 app.listen(port, () => console.log(
   `Express started at \"http://localhost:${port}\"\n` +
   `press Ctrl-C to terminate.`),
-  open(`http://localhost:${port}`)
+  //open(`http://localhost:${port}`)
 )
