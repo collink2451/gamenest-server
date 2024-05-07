@@ -13,13 +13,13 @@ const connect = async (server) => {
         const message = JSON.parse(bytes.toString())
         const user = users[uuid]
         const connection = connections[uuid]
-
         switch (message.type) {
             case "initialBoard":
-
+                console.log(message);
+                sendError(connection, "initialBoard Not implemented yet")
                 break;
             case "fire":
-
+                sendError(connection, "fire Not implemented yet")
                 break;
             default:
                 break;
