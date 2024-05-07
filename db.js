@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 
 mongoose.Promise = global.Promise;
 const connect = async () => {
-    if (process.env.MOGNO_URI === undefined) {
+    if (process.env.MOGNO_URI === null) {
         console.log("MONGO_URI is not defined");
         return;
     }

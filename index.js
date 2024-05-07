@@ -6,9 +6,10 @@ const dotenv = require('dotenv');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const websockets = require('./websockets');
+dotenv.config()
 app = express()
 db.connect()
-dotenv.config()
+
 
 const auth = require('./auth');
 const battleship = require('./games/battleship');
