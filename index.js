@@ -14,6 +14,7 @@ db.connect()
 const auth = require('./auth');
 const battleship = require('./games/battleship');
 const wordle = require('./games/wordle')
+const dotsAndBoxes = require('./games/dotsAndBoxes');
 
 const url = require('url');
 
@@ -37,6 +38,7 @@ app.use(auth);
 
 app.use(battleship);
 app.use(wordle);
+app.use(dotsAndBoxes);
 
 app.use((req, res, next) => {
   res.header('Access-Control-Allow-Credentials', true);
