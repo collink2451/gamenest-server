@@ -1,6 +1,5 @@
 const express = require('express')
 const open = require('open')
-const cors = require('cors')
 const db = require('./db');
 const dotenv = require('dotenv');
 const bodyParser = require('body-parser');
@@ -20,18 +19,6 @@ const url = require('url');
 
 const port = process.env.PORT || 3000
 
-var whitelist = ['http://localhost:3000', 'https://lively-dune-0fea8d010.4.azurestaticapps.net']
-var corsOptions = {
-  credentials: true,
-  origin: function (origin, callback) {
-    if (whitelist.indexOf(origin) !== -1) {
-      callback(null, true)
-    } else {
-      callback(new Error('Not allowed by CORS'))
-    }
-  }
-}
-app.use(cors(corsOptions))
 app.use(cookieParser());
 app.use(bodyParser.json())
 app.use(auth);
@@ -39,13 +26,6 @@ app.use(auth);
 app.use(battleship);
 app.use(wordle);
 app.use(dotsAndBoxes);
-
-app.use((req, res, next) => {
-  res.header('Access-Control-Allow-Credentials', true);
-  res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,UPDATE,OPTIONS');
-  res.header('Access-Control-Allow-Headers', 'X-Requested-With, X-HTTP-Method-Override, Content-Type, Accept');
-  next();
-});
 
 // Use Express to publish static HTML, CSS, and JavaScript files that run in the browser. 
 app.use(express.static(__dirname + '/static'))
