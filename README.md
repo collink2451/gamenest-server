@@ -1,25 +1,21 @@
 # GameNest Server
 
-Node.js/Express backend for the GameNest multi-game platform. Handles GitHub OAuth authentication, game state via WebSockets, and a persistent leaderboard.
+Node.js/Express backend for the GameNest multi-game platform. Handles Battleship game sessions over WebSockets with in-memory state management.
 
 ## Games
 
 | Game | Transport | Status |
 |------|-----------|--------|
-| Battleship | WebSockets | Implemented |
-| Wordle | REST | Stub |
-| Dots and Boxes | REST | Stub |
+| Battleship | WebSocket | Implemented |
 
-Battleship is the primary implemented game — full 2-player sessions over WebSockets with ship placement, turn-based firing, hit/miss tracking, sunk detection, and win state.
+Battleship supports full 2-player sessions — ship placement, turn-based firing, hit/miss tracking, sunk detection, and win state. Game state is held in memory and does not persist across server restarts.
 
 ## API
 
 | Method | Path | Description |
 |--------|------|-------------|
-| `GET` | `/auth/github/callback` | GitHub OAuth callback |
-| `GET` | `/auth/check` | Verify session cookie |
-| `GET` | `/auth/logout` | Clear session |
-| `GET` | `/ping` | Health check |
+| `GET` | `/api/battleship/:gameId` | Get game by ID |
+| `GET` | `/api/battleship/:gameId/shoot` | Fire at coordinates |
 | `WebSocket` | `/?username=&lobbyId=` | Battleship game session |
 
 ## Tech Stack
@@ -27,16 +23,13 @@ Battleship is the primary implemented game — full 2-player sessions over WebSo
 - **Runtime:** Node.js
 - **Framework:** Express
 - **Real-time:** WebSocket (ws)
-- **Auth:** GitHub OAuth (cookie-based)
-- **Database:** MongoDB (via Mongoose)
+- **State:** In-memory
 
 ## Setup
 
 ### Requirements
 
 - Node.js 18+
-- MongoDB instance
-- GitHub OAuth app ([GitHub Developer Settings](https://github.com/settings/developers))
 
 ### Installation
 
@@ -49,12 +42,7 @@ npm install
 2. Create a `.env` file in the root directory:
 
 ```env
-MONGO_URI=your_mongodb_connection_string
-PORT=3000
-
-# GitHub OAuth
-GITHUB_CLIENT_ID=your_github_oauth_client_id
-GITHUB_CLIENT_SECRET=your_github_oauth_client_secret
+PORT=5003
 ```
 
 3. Start the server:
