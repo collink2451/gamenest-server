@@ -1,42 +1,26 @@
-const mongoose = require('mongoose')
-const Schema = mongoose.Schema
-const BattleshipBoard = require('./BattleshipBoard')
+const BattleshipBoard = require('./BattleshipBoard');
 
-const BattleshipGameSchema = new Schema({
-    lobbyId: {
-        type: String,
-        required: true
-    },
-    state: {
-        type: String,
-        required: true
-    },
-    player1: {
-        type: String,
-        required: true
-    },
-    player2: {
-        type: String
-    },
-    player1Board: {
-        type: Schema.Types.Mixed,
-        required: true
-    },
-    player2Board: {
-        type: Schema.Types.Mixed
-    },
-    player1Turn: {
-        type: Boolean,
-        required: true
-    },
-    winner: {
-        type: String
-    },
-    gameover: {
-        type: Boolean,
-        required: true
+const games = {};
+
+class BattleshipGame {
+    constructor(data) {
+        Object.assign(this, data);
     }
-});
+
+    save() {
+        games[this.lobbyId] = this;
+        return Promise.resolve(this);
+    }
+
+    static findOne({ lobbyId }) {
+        return Promise.resolve(games[lobbyId] || null);
+    }
+
+    static findOneAndReplace({ lobbyId }, game) {
+        games[lobbyId] = game;
+        return Promise.resolve(game);
+    }
+}
 
 const getRedactedGameState = (game, username) => {
     const isPlayer1 = game.player1 === username;
@@ -66,7 +50,7 @@ const getRedactedGameState = (game, username) => {
     }
 
     return redactedGameState;
-}
+};
 
-module.exports = mongoose.model('BattleshipGame', BattleshipGameSchema);
+module.exports = BattleshipGame;
 module.exports.getRedactedGameState = getRedactedGameState;
