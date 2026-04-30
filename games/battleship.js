@@ -3,11 +3,11 @@
 const express = require('express');
 const router = express.Router();
 
-router.get('/battleship/:gameId', (req, res) => {
+router.get('/api/battleship/:gameId', (req, res) => {
     res.send('Battleship game');
 });
 
-router.get('/battleship/:gameId/shoot', (req, res) => {
+router.get('/api/battleship/:gameId/shoot', (req, res) => {
     // Get the query string from the URL
     let query = req.query;
     let x = query.x;
